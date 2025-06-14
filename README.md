@@ -94,7 +94,7 @@ def find_pairs(nums, target):
 
 | Model           | Rating | Latency (s) | Input Tokens | Output Tokens | Model Output | Key Observations |
 |----------------|--------|-------------|--------------|----------------|-------------------------------|------------------|
-| GPT-4o         |Excellent|5780 ms|81|108|[View Output](gpt-4o/code-quality/scenario-b/output.txt)|[View Notes](gpt-4o/code-quality/scenario-b/output.txt)|
+| GPT-4o         |Excellent|5780 ms|81|108|[View Output](gpt-4o/code-quality/scenario-b/output.txt)|[View Notes](gpt-4o/code-quality/scenario-b/key-observation.md)|
 | Claude Sonnet  | Good   |     3558 ms        |   409           |    124            |  [View Output](claude-3-7/code-quality/scenario-b/output.txt)  |     [View Notes](claude-3-7/code-quality/scenario-b/key-observation.md)             |
 | Gemini Flash   |  Good      |      1317 ms|   662           |    114            |[View Output](gemini-1-5-flash/code-quality/scenario-b/output.txt)| [View Notes](gemini-1-5-flash/code-quality/scenario-b/key-observation.md)|
 | DeepSeek-R1 7B |   Good     |     27472 ms        |       111       |        681        |    [View Output](deepseek-r1-7b/code-quality/scenario-b/output.txt) |    [View Notes](deepseek-r1-7b/code-quality/scenario-b/key-observation.md)  |
