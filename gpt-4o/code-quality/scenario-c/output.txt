@@ -1,0 +1,44 @@
+```javascript
+// loggerMiddleware.js
+function loggerMiddleware(req, res, next) {
+  const start = Date.now();
+
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(`${req.method} ${req.originalUrl} - ${duration}ms`);
+  });
+
+  next();
+}
+
+module.exports = loggerMiddleware;
+```
+
+```javascript
+// loggerMiddleware.test.js
+const loggerMiddleware = require('./loggerMiddleware');
+
+describe('loggerMiddleware', () => {
+  let req, res, next;
+
+  beforeEach(() => {
+    req = { method: 'GET', originalUrl: '/test' };
+    res = { on: jest.fn((event, cb) => cb()) };
+    next = jest.fn();
+    console.log = jest.fn();
+  });
+
+  it('logs method, url and response time', () => {
+    const now = Date.now();
+    jest.spyOn(global.Date, 'now')
+      .mockImplementationOnce(() => now)
+      .mockImplementationOnce(() => now + 25);
+
+    loggerMiddleware(req, res, next);
+
+    expect(res.on).toHaveBeenCalledWith('finish', expect.any(Function));
+    expect(console.log).toHaveBeenCalledWith('GET /test - 25ms');
+    expect(next).toHaveBeenCalled();
+  });
+});
+```

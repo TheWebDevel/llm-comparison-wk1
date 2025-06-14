@@ -1,0 +1,15 @@
+```python
+def find_pairs(nums, target):
+    seen = set()
+    pairs = set()
+    for num in nums:
+        complement = target - num
+        if complement in seen:
+            pairs.add((min(num, complement), max(num, complement)))
+        seen.add(num)
+    return list(pairs)
+```
+
+**Complexity Explanation:**
+Original was **O(n²)** time due to nested loops.
+Refactored version is **O(n)** time and memory using a hash set for lookup and deduplication.

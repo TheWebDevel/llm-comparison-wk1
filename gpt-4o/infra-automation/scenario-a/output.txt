@@ -1,0 +1,80 @@
+```hcl
+# modules/s3_secure_bucket/main.tf
+
+variable "bucket_name" {
+  type        = string
+  description = "Name of the S3 bucket"
+}
+
+variable "log_bucket_name" {
+  type        = string
+  description = "Name of the logging bucket"
+}
+
+variable "role_arn" {
+  type        = string
+  description = "IAM Role ARN to grant least-privilege access"
+}
+
+resource "aws_s3_bucket" "main" {
+  bucket = var.bucket_name
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+  logging {
+    target_bucket = var.log_bucket_name
+    target_prefix = "${var.bucket_name}/logs/"
+  }
+
+  versioning {
+    enabled = true
+  }
+
+  lifecycle_rule {
+    enabled = true
+    noncurrent_version_expiration {
+      days = 30
+    }
+  }
+
+  force_destroy = false
+}
+
+resource "aws_s3_bucket_policy" "access_policy" {
+  bucket = aws_s3_bucket.main.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = var.role_arn
+        }
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject"
+        ]
+        Resource = "${aws_s3_bucket.main.arn}/*"
+      }
+    ]
+  })
+}
+```
+
+```hcl
+# Usage example
+
+module "secure_bucket" {
+  source          = "./modules/s3_secure_bucket"
+  bucket_name     = "my-secure-data-bucket"
+  log_bucket_name = "my-logging-bucket"
+  role_arn        = "arn:aws:iam::123456789012:role/my-s3-access-role"
+}
+```

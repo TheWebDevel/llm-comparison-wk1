@@ -1,0 +1,28 @@
+```sql
+SELECT
+  JSON_VALUE(event, '$.user_id') AS user_id,
+  JSON_VALUE(event, '$.ts') AS ts,
+  payload.key1,
+  payload.key2,
+  payload.key3
+FROM (
+  SELECT
+    event,
+    JSON_QUERY(event, '$.payload') AS payload_json
+  FROM
+    `your_dataset.your_table`,
+    UNNEST([events]) AS event
+),
+UNNEST([STRUCT(
+  JSON_VALUE(payload_json, '$.key1') AS key1,
+  JSON_VALUE(payload_json, '$.key2') AS key2,
+  JSON_VALUE(payload_json, '$.key3') AS key3
+)]) AS payload;
+```
+
+✅ **Notes**:
+
+* Replace `key1`, `key2`, `key3` with actual keys expected from `payload`.
+* Missing keys will return `NULL` safely via `JSON_VALUE`.
+* Handles both scalar fields and nested object extraction.
+* You can use `SAFE.` prefix (e.g., `SAFE.JSON_VALUE`) if needed for strict error handling.

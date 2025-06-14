@@ -1,0 +1,34 @@
+```tsx
+// Counter.tsx
+import React, { useState } from 'react';
+
+type CounterProps = {
+  start: number;
+};
+
+const Counter: React.FC<CounterProps> = ({ start }) => {
+  const [count, setCount] = useState(start);
+
+  return (
+    <button onClick={() => setCount(c => c + 1)}>
+      {count}
+    </button>
+  );
+};
+
+export default Counter;
+```
+
+```tsx
+// Counter.test.tsx
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react';
+import Counter from './Counter';
+
+test('increments count on click', () => {
+  const { getByText } = render(<Counter start={5} />);
+  const button = getByText('5');
+  fireEvent.click(button);
+  expect(button.textContent).toBe('6');
+});
+```

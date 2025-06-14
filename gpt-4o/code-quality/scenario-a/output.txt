@@ -1,0 +1,89 @@
+```python
+# app.py
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import Dict, List
+
+app = FastAPI(title="Book API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+class Book(BaseModel):
+    id: int
+    title: str
+    author: str
+    published: int
+
+db: Dict[int, Book] = {}
+
+@app.post("/books", response_model=Book, status_code=201)
+def create_book(book: Book):
+    if book.id in db:
+        raise HTTPException(status_code=400, detail="Book already exists")
+    db[book.id] = book
+    return book
+
+@app.get("/books/{book_id}", response_model=Book)
+def read_book(book_id: int):
+    if book_id not in db:
+        raise HTTPException(status_code=404, detail="Book not found")
+    return db[book_id]
+
+@app.get("/books", response_model=List[Book])
+def list_books():
+    return list(db.values())
+
+@app.put("/books/{book_id}", response_model=Book)
+def update_book(book_id: int, book: Book):
+    if book_id != book.id:
+        raise HTTPException(status_code=400, detail="ID mismatch")
+    if book_id not in db:
+        raise HTTPException(status_code=404, detail="Book not found")
+    db[book_id] = book
+    return book
+
+@app.delete("/books/{book_id}", status_code=204)
+def delete_book(book_id: int):
+    if book_id not in db:
+        raise HTTPException(status_code=404, detail="Book not found")
+    del db[book_id]
+```
+
+```python
+# test_app.py
+from fastapi.testclient import TestClient
+from app import app
+
+client = TestClient(app)
+
+def test_create_book():
+    response = client.post("/books", json={"id": 1, "title": "1984", "author": "Orwell", "published": 1949})
+    assert response.status_code == 201
+    assert response.json()["title"] == "1984"
+
+def test_get_book():
+    response = client.get("/books/1")
+    assert response.status_code == 200
+    assert response.json()["author"] == "Orwell"
+
+def test_update_book():
+    response = client.put("/books/1", json={"id": 1, "title": "Animal Farm", "author": "Orwell", "published": 1945})
+    assert response.status_code == 200
+    assert response.json()["title"] == "Animal Farm"
+
+def test_delete_book():
+    response = client.delete("/books/1")
+    assert response.status_code == 204
+    response = client.get("/books/1")
+    assert response.status_code == 404
+
+def test_get_nonexistent_book():
+    response = client.get("/books/999")
+    assert response.status_code == 404
+```

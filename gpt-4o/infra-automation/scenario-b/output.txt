@@ -1,0 +1,36 @@
+```bash
+#!/bin/sh
+
+set -eu
+
+# Configurable variables
+REPO_NAME="my-ecr-repo"
+AWS_REGION="us-east-1"
+ACCOUNT_ID="123456789012"
+SLACK_WEBHOOK_URL="https://hooks.slack.com/services/XXX/YYY/ZZZ"
+
+# Get short Git commit hash
+COMMIT_HASH=$(git rev-parse --short HEAD)
+
+# Build and tag image
+IMAGE_TAG="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:${COMMIT_HASH}"
+
+fail_notify() {
+  MESSAGE=":x: CI job failed - Commit ${COMMIT_HASH}"
+  curl -s -X POST -H "Content-Type: application/json" \
+    -d "{\"text\":\"${MESSAGE}\"}" \
+    "${SLACK_WEBHOOK_URL}" >/dev/null 2>&1 || true
+}
+
+trap 'fail_notify' EXIT
+
+# Authenticate to ECR
+aws ecr get-login-password --region "${AWS_REGION}" \
+  | docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+# Build and push image
+docker build -t "${IMAGE_TAG}" .
+docker push "${IMAGE_TAG}"
+
+trap - EXIT
+```

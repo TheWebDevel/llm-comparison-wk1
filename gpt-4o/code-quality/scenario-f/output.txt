@@ -1,0 +1,10 @@
+```csharp
+var result = orders
+    .Where(o => o.Total > 1000)
+    .Select(o => o.CustomerId)
+    .Distinct()
+    .ToList();
+```
+
+**Performance Impact:**
+Eliminates unnecessary materialization with `ToList()`. Enables deferred execution until `ToList()` at the end, reducing memory usage and improving performance—especially with large collections or chained queries.
