@@ -1,0 +1,159 @@
+```terraform
+variable "bucket_name" {
+  description = "Name of the S3 bucket"
+  type        = string
+}
+
+variable "role_arn" {
+  description = "ARN of the role to grant access to the bucket"
+  type        = string
+}
+
+variable "log_bucket_name" {
+  description = "Name of the S3 bucket for access logs"
+  type        = string
+}
+
+variable "tags" {
+  description = "Tags to apply to resources"
+  type        = map(string)
+  default     = {}
+}
+
+# Logging bucket
+resource "aws_s3_bucket" "log_bucket" {
+  bucket = var.log_bucket_name
+  tags   = var.tags
+}
+
+resource "aws_s3_bucket_ownership_controls" "log_bucket_ownership" {
+  bucket = aws_s3_bucket.log_bucket.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "log_bucket_acl" {
+  depends_on = [aws_s3_bucket_ownership_controls.log_bucket_ownership]
+  bucket     = aws_s3_bucket.log_bucket.id
+  acl        = "log-delivery-write"
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "log_bucket_encryption" {
+  bucket = aws_s3_bucket.log_bucket.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "log_bucket_public_access_block" {
+  bucket                  = aws_s3_bucket.log_bucket.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# Main bucket
+resource "aws_s3_bucket" "main" {
+  bucket = var.bucket_name
+  tags   = var.tags
+}
+
+resource "aws_s3_bucket_ownership_controls" "main_bucket_ownership" {
+  bucket = aws_s3_bucket.main.id
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "main_bucket_encryption" {
+  bucket = aws_s3_bucket.main.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_logging" "main_bucket_logging" {
+  bucket        = aws_s3_bucket.main.id
+  target_bucket = aws_s3_bucket.log_bucket.id
+  target_prefix = "logs/${var.bucket_name}/"
+}
+
+resource "aws_s3_bucket_versioning" "main_bucket_versioning" {
+  bucket = aws_s3_bucket.main.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "main_bucket_public_access_block" {
+  bucket                  = aws_s3_bucket.main.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# IAM policy for the specified role
+resource "aws_iam_policy" "bucket_access_policy" {
+  name        = "${var.bucket_name}-access-policy"
+  description = "Provides least privilege access to ${var.bucket_name} S3 bucket"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject"
+        ],
+        Resource = [
+          "${aws_s3_bucket.main.arn}/*"
+        ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:ListBucket"
+        ],
+        Resource = [
+          aws_s3_bucket.main.arn
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "role_policy_attachment" {
+  role       = element(split(":", var.role_arn), 5)
+  policy_arn = aws_iam_policy.bucket_access_policy.arn
+}
+
+output "bucket_id" {
+  description = "The ID of the created S3 bucket"
+  value       = aws_s3_bucket.main.id
+}
+
+output "bucket_arn" {
+  description = "The ARN of the created S3 bucket"
+  value       = aws_s3_bucket.main.arn
+}
+
+output "log_bucket_id" {
+  description = "The ID of the logging S3 bucket"
+  value       = aws_s3_bucket.log_bucket.id
+}
+
+output "access_policy_arn" {
+  description = "The ARN of the IAM policy for bucket access"
+  value       = aws_iam_policy.bucket_access_policy.arn
+}
+```
