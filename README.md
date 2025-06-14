@@ -28,8 +28,8 @@
 ## 2. Rating Guidelines
 | Rating              | Definition (apply to every criterion)                                                           |
 |---------------------|--------------------------------------------------------------------------------------------------|
-| **Excellent**       | Correct on first run, minimal edits, handles edge-cases, unit tests pass          |
-| **Good**            | Minor fixes needed, occasional errors, passes after 1 retry                     |
+| **Excellent**       | Correct on first run, minimal edits, handles edge-cases          |
+| **Good**            | Minor fixes needed, occasional errors                     |
 | **Basic / Limited** | Works only for simple cases, frequent edits, partial or incorrect output                        |
 | **Poor**   | Model refuses, hallucinates unusable code/SQL/script, or exceeds timeout                        |
 
