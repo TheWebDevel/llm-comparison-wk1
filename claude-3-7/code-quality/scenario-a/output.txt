@@ -1,0 +1,145 @@
+```python
+# main.py
+from typing import Dict, List, Optional
+from fastapi import FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+
+app = FastAPI(
+    title="Book API",
+    description="CRUD API for managing books",
+    version="1.0.0"
+)
+
+# CORS configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Pydantic models
+class BookBase(BaseModel):
+    title: str
+    author: str
+    published: int = Field(..., description="Year of publication")
+
+class BookCreate(BookBase):
+    pass
+
+class Book(BookBase):
+    id: int
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "id": 1,
+                "title": "The Great Gatsby",
+                "author": "F. Scott Fitzgerald",
+                "published": 1925
+            }
+        }
+
+# In-memory store
+books_db: Dict[int, Book] = {}
+counter = 0
+
+# CRUD endpoints
+@app.post("/books/", response_model=Book, status_code=status.HTTP_201_CREATED)
+def create_book(book: BookCreate):
+    global counter
+    counter += 1
+    new_book = Book(id=counter, **book.dict())
+    books_db[counter] = new_book
+    return new_book
+
+@app.get("/books/", response_model=List[Book])
+def read_books(skip: int = 0, limit: int = 100):
+    return list(books_db.values())[skip : skip + limit]
+
+@app.get("/books/{book_id}", response_model=Book)
+def read_book(book_id: int):
+    if book_id not in books_db:
+        raise HTTPException(status_code=404, detail="Book not found")
+    return books_db[book_id]
+
+@app.put("/books/{book_id}", response_model=Book)
+def update_book(book_id: int, book: BookCreate):
+    if book_id not in books_db:
+        raise HTTPException(status_code=404, detail="Book not found")
+    updated_book = Book(id=book_id, **book.dict())
+    books_db[book_id] = updated_book
+    return updated_book
+
+@app.delete("/books/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_book(book_id: int):
+    if book_id not in books_db:
+        raise HTTPException(status_code=404, detail="Book not found")
+    del books_db[book_id]
+    return None
+```
+
+```python
+# test_main.py
+from fastapi.testclient import TestClient
+import pytest
+from main import app
+
+client = TestClient(app)
+
+def test_create_book():
+    response = client.post(
+        "/books/",
+        json={"title": "Test Book", "author": "Test Author", "published": 2022},
+    )
+    assert response.status_code == 201
+    data = response.json()
+    assert data["title"] == "Test Book"
+    assert data["author"] == "Test Author"
+    assert data["published"] == 2022
+    assert "id" in data
+    return data["id"]
+
+def test_read_books():
+    response = client.get("/books/")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+
+def test_read_book():
+    book_id = test_create_book()
+    response = client.get(f"/books/{book_id}")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["id"] == book_id
+    assert data["title"] == "Test Book"
+    assert data["author"] == "Test Author"
+    assert data["published"] == 2022
+
+def test_update_book():
+    book_id = test_create_book()
+    response = client.put(
+        f"/books/{book_id}",
+        json={"title": "Updated Book", "author": "Updated Author", "published": 2023},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["id"] == book_id
+    assert data["title"] == "Updated Book"
+    assert data["author"] == "Updated Author"
+    assert data["published"] == 2023
+
+def test_delete_book():
+    book_id = test_create_book()
+    response = client.delete(f"/books/{book_id}")
+    assert response.status_code == 204
+    response = client.get(f"/books/{book_id}")
+    assert response.status_code == 404
+
+def test_read_nonexistent_book():
+    # Negative test case
+    response = client.get("/books/9999")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Book not found"
+```
