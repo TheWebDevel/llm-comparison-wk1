@@ -25,8 +25,6 @@
 
 **Legend** → `Excellent` | `Good` | `Basic / Limited` | `Poor`
 
----
-
 ## 2. Rating Guidelines
 | Rating              | Definition (apply to every criterion)                                                           |
 |---------------------|--------------------------------------------------------------------------------------------------|
