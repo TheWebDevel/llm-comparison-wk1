@@ -173,7 +173,7 @@ var result = orders.Where(o => o.Total > 1000)
 |----------------|--------|-------------|--------------|----------------|-------------------------------|------------------|
 | GPT-4o         |Excellent|5070 ms|59|85|[View Output](gpt-4o/code-quality/scenario-f/output.txt)|[View Notes](gpt-4o/code-quality/scenario-f/key-observation.md)|
 | Claude Sonnet  | Good   |     4940 ms        |   380           |    177            |  [View Output](claude-3-7/code-quality/scenario-f/output.txt)  |     [View Notes](claude-3-7/code-quality/scenario-f/key-observation.md)             |
-| Gemini Flash   |Good|1639 ms|628|166|[View Output](gemini-1-5-flash/code-quality/scenario-f/output.txt)|[View Notes](gemini-1-5-flash/code-quality/scenario-f/output.txt)|
+| Gemini Flash   |Good|1639 ms|628|166|[View Output](gemini-1-5-flash/code-quality/scenario-f/output.txt)|[View Notes](gemini-1-5-flash/code-quality/scenario-f/key-observation.md)|
 | DeepSeek-R1 7B |   Poor     |     31070 ms|      72        |     684           |   [View Output](deepseek-r1-7b/code-quality/scenario-f/output.txt)       |   [View Notes](deepseek-r1-7b/code-quality/scenario-f/key-observation.md)               |
 
 
@@ -208,9 +208,9 @@ Use UNNEST and handle missing keys gracefully.
 
 | Model           | Rating | Latency | Input Tokens | Output Tokens | Model Output | Key Observations |
 |----------------|--------|-------------|--------------|----------------|-------------------------------|------------------|
-| GPT-4o         |Excellent|7850 ms|37|221|[View Output](gpt-4o/sql-generation/scenario-b/output.txt)|[View Notes](gpt-4o/sql-generation/scenario-b/output.txt)|
+| GPT-4o         |Excellent|7850 ms|37|221|[View Output](gpt-4o/sql-generation/scenario-b/output.txt)|[View Notes](gpt-4o/sql-generation/scenario-b/key-observation.md)|
 | Claude Sonnet  | Basic/Limited   |     6221 ms        |   347           |    237            |  [View Output](claude-3-7/sql-generation/scenario-b/output.txt)  |     [View Notes](claude-3-7/sql-generation/scenario-b/key-observation.md)             |
-| Gemini Flash   |Poor|2976 ms|599|246|[View Output](gemini-1-5-flash/sql-generation/scenario-b/output.txt)|[View Notes](gemini-1-5-flash/sql-generation/scenario-b/output.txt)|
+| Gemini Flash   |Poor|2976 ms|599|246|[View Output](gemini-1-5-flash/sql-generation/scenario-b/output.txt)|[View Notes](gemini-1-5-flash/sql-generation/scenario-b/key-observation.md)|
 | DeepSeek-R1 7B | Poor       |  31180 ms|      40        |      743          |   [View Output](deepseek-r1-7b/sql-generation/scenario-b/output.txt)    |    [View Notes](deepseek-r1-7b/sql-generation/scenario-b/key-observation.md)              |
 
 
@@ -246,8 +246,8 @@ Script must be POSIX-compliant.
 |----------------|--------|-------------|--------------|----------------|-------------------------------|------------------|
 | GPT-4o         |Excellent|9620 ms|52|261|[View Output](gpt-4o/infra-automation/scenario-b/output.txt)|[View Notes](gpt-4o/infra-automation/scenario-b/key-observation.md)|
 | Claude Sonnet  | Good   |     11437 ms       |   366           |    705            |  [View Output](claude-3-7/infra-automation/scenario-b/output.txt)  |     [View Notes](claude-3-7/infra-automation/scenario-b/key-observation.md)             |
-| Gemini Flash   |Poor|2964 ms|612|234|[View Output](gemini-1-5-flash/infra-automation/scenario-b/output.txt)|[View Notes](claude-3-7/infra-automation/scenario-b/key-observation.md)|
-| DeepSeek-R1 7B | Poor       |   59311          |   55           |     1419           | [View Output](deepseek-r1-7b/infra-automation/scenario-b/output.txt)| [View Notes](gemini-1-5-flash/infra-automation/scenario-b/output.txt)  |
+| Gemini Flash   |Poor|2964 ms|612|234|[View Output](gemini-1-5-flash/infra-automation/scenario-b/output.txt)|[View Notes](gemini-1-5-flash/infra-automation/scenario-b/key-observation.md)|
+| DeepSeek-R1 7B | Poor       |   59311          |   55           |     1419           | [View Output](deepseek-r1-7b/infra-automation/scenario-b/output.txt)| [View Notes](deepseek-r1-7b/infra-automation/scenario-b/key-observation.md)  |
 
 
 ## 4. Conclusions
