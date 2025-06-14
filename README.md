@@ -71,7 +71,7 @@ Create a FastAPI app with full CRUD endpoints for `Book` {id:int, title:str, aut
 |----------------|--------|-------------|--------------|----------------|-------------------------------|------------------|
 | GPT-4o         |Good|8200 ms|67|643|[View Output](gpt-4o/code-quality/scenario-a/output.txt)|[View Notes](gpt-4o/code-quality/scenario-a/key-observation.md)|
 | Claude Sonnet  | Good   |     21363 ms        |   383           |    1268            |  [View Output](claude-3-7/code-quality/scenario-a/output.txt)  |     [View Notes](claude-3-7/code-quality/scenario-a/key-observation.md)             |
-| Gemini Flash   | Good       |   6840          |    633          |      967          |  [View Output](gemini-1-5-flash/code-quality/scenario-a/output.txt)   |[View Notes](gemini-1-5-flash/code-quality/scenario-a/key-observation.md) |
+| Gemini Flash   | Good       |   6840 ms|    633          |      967          |  [View Output](gemini-1-5-flash/code-quality/scenario-a/output.txt)   |[View Notes](gemini-1-5-flash/code-quality/scenario-a/key-observation.md) |
 | DeepSeek-R1 7B |  Basic/Limited      |     62389 ms        |        76      |       1574         |         [View Output](deepseek-r1-7b/code-quality/scenario-a/output.txt) |  [View Notes](deepseek-r1-7b/code-quality/scenario-a/key-observation.md)|
 
 
@@ -247,7 +247,7 @@ Script must be POSIX-compliant.
 | GPT-4o         |Excellent|9620 ms|52|261|[View Output](gpt-4o/infra-automation/scenario-b/output.txt)|[View Notes](gpt-4o/infra-automation/scenario-b/key-observation.md)|
 | Claude Sonnet  | Good   |     11437 ms       |   366           |    705            |  [View Output](claude-3-7/infra-automation/scenario-b/output.txt)  |     [View Notes](claude-3-7/infra-automation/scenario-b/key-observation.md)             |
 | Gemini Flash   |Poor|2964 ms|612|234|[View Output](gemini-1-5-flash/infra-automation/scenario-b/output.txt)|[View Notes](gemini-1-5-flash/infra-automation/scenario-b/key-observation.md)|
-| DeepSeek-R1 7B | Poor       |   59311          |   55           |     1419           | [View Output](deepseek-r1-7b/infra-automation/scenario-b/output.txt)| [View Notes](deepseek-r1-7b/infra-automation/scenario-b/key-observation.md)  |
+| DeepSeek-R1 7B | Poor       |   59311 ms|   55           |     1419           | [View Output](deepseek-r1-7b/infra-automation/scenario-b/output.txt)| [View Notes](deepseek-r1-7b/infra-automation/scenario-b/key-observation.md)  |
 
 
 ## 4. Conclusions
