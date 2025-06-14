@@ -1,0 +1,60 @@
+```bash
+#!/bin/sh
+set -e
+
+# Configuration
+ECR_REPO="${ECR_REPO:-my-ecr-repo}"
+AWS_REGION="${AWS_REGION:-us-east-1}"
+SLACK_WEBHOOK_URL="${SLACK_WEBHOOK_URL:-}"
+
+# Get short Git commit hash
+GIT_COMMIT_SHORT=$(git rev-parse --short HEAD)
+if [ -z "$GIT_COMMIT_SHORT" ]; then
+  echo "Error: Failed to get Git commit hash"
+  exit 1
+fi
+
+# ECR login
+echo "Logging in to ECR..."
+aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to login to ECR"
+
+  if [ -n "$SLACK_WEBHOOK_URL" ]; then
+    curl -X POST -H 'Content-type: application/json' --data "{\"text\":\":x: Failed to login to ECR for commit $GIT_COMMIT_SHORT\"}" "$SLACK_WEBHOOK_URL"
+  fi
+
+  exit 1
+fi
+
+# Build Docker image
+echo "Building Docker image..."
+FULL_ECR_REPO="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO"
+docker build -t "$FULL_ECR_REPO:$GIT_COMMIT_SHORT" -t "$FULL_ECR_REPO:latest" .
+if [ $? -ne 0 ]; then
+  echo "Error: Docker build failed"
+
+  if [ -n "$SLACK_WEBHOOK_URL" ]; then
+    curl -X POST -H 'Content-type: application/json' --data "{\"text\":\":x: Docker build failed for commit $GIT_COMMIT_SHORT\"}" "$SLACK_WEBHOOK_URL"
+  fi
+
+  exit 1
+fi
+
+# Push to ECR
+echo "Pushing to ECR..."
+docker push "$FULL_ECR_REPO:$GIT_COMMIT_SHORT"
+docker push "$FULL_ECR_REPO:latest"
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to push to ECR"
+
+  if [ -n "$SLACK_WEBHOOK_URL" ]; then
+    curl -X POST -H 'Content-type: application/json' --data "{\"text\":\":x: Failed to push to ECR for commit $GIT_COMMIT_SHORT\"}" "$SLACK_WEBHOOK_URL"
+  fi
+
+  exit 1
+fi
+
+echo "Successfully built and pushed image $FULL_ECR_REPO:$GIT_COMMIT_SHORT"
+exit 0
+```

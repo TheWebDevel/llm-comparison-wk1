@@ -1,0 +1,13 @@
+```python
+def find_pairs(nums, target):
+    pairs = []
+    seen = set()
+    for num in nums:
+        complement = target - num
+        if complement in seen:
+            pairs.append((complement, num))
+        seen.add(num)
+    return pairs
+```
+
+The original solution was O(n²) time due to nested loops. The refactored version uses a hash set for O(1) lookups, reducing time complexity to O(n). Memory usage is O(n) for storing seen numbers.

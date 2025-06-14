@@ -1,0 +1,91 @@
+```javascript
+// middleware.js
+function loggerMiddleware(req, res, next) {
+  const start = Date.now();
+
+  // Store the original end method
+  const originalEnd = res.end;
+
+  // Override the end method
+  res.end = function(chunk, encoding) {
+    const responseTime = Date.now() - start;
+    console.log(`${req.method} ${req.path} - ${responseTime}ms`);
+
+    // Call the original end method
+    return originalEnd.call(this, chunk, encoding);
+  };
+
+  next();
+}
+
+module.exports = loggerMiddleware;
+```
+
+```javascript
+// middleware.test.js
+const loggerMiddleware = require('./middleware');
+
+describe('Logger Middleware', () => {
+  let req, res, next, consoleLogSpy;
+
+  beforeEach(() => {
+    req = {
+      method: 'GET',
+      path: '/test'
+    };
+
+    res = {
+      end: jest.fn()
+    };
+
+    next = jest.fn();
+
+    // Spy on console.log
+    consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+
+    // Mock Date.now to return predictable values
+    jest.spyOn(Date, 'now')
+      .mockReturnValueOnce(1000)  // First call (start time)
+      .mockReturnValueOnce(1150); // Second call (end time)
+  });
+
+  afterEach(() => {
+    consoleLogSpy.mockRestore();
+    jest.restoreAllMocks();
+  });
+
+  test('should log HTTP method, path and response time', () => {
+    loggerMiddleware(req, res, next);
+
+    // Verify next was called
+    expect(next).toHaveBeenCalled();
+
+    // Simulate response completion
+    res.end();
+
+    // Verify logging occurred with correct format
+    expect(consoleLogSpy).toHaveBeenCalledWith('GET /test - 150ms');
+  });
+
+  test('should pass arguments to original res.end', () => {
+    loggerMiddleware(req, res, next);
+
+    const chunk = 'response body';
+    const encoding = 'utf8';
+    res.end(chunk, encoding);
+
+    expect(res.end).toHaveBeenCalledWith(chunk, encoding);
+  });
+
+  test('should preserve the context for res.end', () => {
+    const context = { custom: 'context' };
+    res.end = res.end.bind(context);
+
+    loggerMiddleware(req, res, next);
+    res.end();
+
+    // The original function should be called with the same context
+    expect(res.end.mock.instances[0]).toBe(context);
+  });
+});
+```

@@ -1,0 +1,18 @@
+```sql
+SELECT
+  JSON_EXTRACT_SCALAR(event, '$.user_id') AS user_id,
+  PARSE_TIMESTAMP('%Y-%m-%dT%H:%M:%E*SZ', JSON_EXTRACT_SCALAR(event, '$.ts')) AS ts,
+  payload.*
+FROM your_table,
+UNNEST(JSON_EXTRACT_ARRAY(events, '$')) AS event
+LEFT JOIN UNNEST(
+  ARRAY(
+    SELECT AS STRUCT
+      JSON_EXTRACT_SCALAR(payload, '$.field1') AS field1,
+      JSON_EXTRACT_SCALAR(payload, '$.field2') AS field2,
+      SAFE_CAST(JSON_EXTRACT_SCALAR(payload, '$.count') AS INT64) AS count,
+      JSON_EXTRACT_SCALAR(payload, '$.status') AS status
+    FROM UNNEST([JSON_EXTRACT(event, '$.payload')]) AS payload
+  )
+) AS payload
+```

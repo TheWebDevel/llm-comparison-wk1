@@ -1,0 +1,12 @@
+```csharp
+var result = orders.Where(o => o.Total > 1000)
+                   .Select(o => o.CustomerId)
+                   .Distinct();
+```
+
+Performance impact:
+1. Removed first `.ToList()` - Prevents materializing an intermediate collection, allowing the query to stream data through the pipeline
+2. Removed final `.ToList()` - Enables deferred execution, so evaluation only happens when result is enumerated
+3. Time complexity remains O(n), but memory usage improves from O(n) to O(1) for streaming operations
+4. The query now uses less memory and avoids unnecessary allocations, especially beneficial for large datasets
+5. Actual materialization is deferred until the result is needed, enabling potential further optimizations
