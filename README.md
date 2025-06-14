@@ -31,20 +31,12 @@
 ## 2. Rating Guidelines
 | Rating              | Definition (apply to every criterion)                                                           |
 |---------------------|--------------------------------------------------------------------------------------------------|
-| **excellent**       | Correct on first run, minimal edits, handles edge-cases, unit tests pass          |
-| **good**            | Minor fixes needed, occasional errors, passes after 1 retry                     |
-| **basic / limited** | Works only for simple cases, frequent edits, partial or incorrect output                        |
-| **poor**   | Model refuses, hallucinates unusable code/SQL/script, or exceeds timeout                        |
-
----
+| **Excellent**       | Correct on first run, minimal edits, handles edge-cases, unit tests pass          |
+| **Good**            | Minor fixes needed, occasional errors, passes after 1 retry                     |
+| **Basic / Limited** | Works only for simple cases, frequent edits, partial or incorrect output                        |
+| **Poor**   | Model refuses, hallucinates unusable code/SQL/script, or exceeds timeout                        |
 
 ## 3. Detailed Test Scenarios
-#### Parameters
-| Parameter        | Value | Why this works well for code / SQL / infra tasks                                                                 |
-|------------------|:-----:|------------------------------------------------------------------------------------------------------------------|
-| temperature      | 0.3  | Low temp reduces randomness, so syntax stays correct and outputs are comparable across models.                   |
-| top-p (nucleus)  | 0.95  | Lets the sampler look at the top 95% probability mass—enough variety to avoid getting stuck, but still controlled. |
-| top-k            | 40    | Caps the candidate list so extremely long-tail tokens (often hallucinations) are excluded.                        |
 
 #### System Prompt
 ``` text
@@ -187,7 +179,6 @@ var result = orders.Where(o => o.Total > 1000)
 | Gemini Flash   |Good|1639 ms|628|166|[View Output](gemini-1-5-flash/code-quality/scenario-f/output.txt)|[View Notes](gemini-1-5-flash/code-quality/scenario-f/output.txt)|
 | DeepSeek-R1 7B |   Poor     |     31070 ms|      72        |     684           |   [View Output](deepseek-r1-7b/code-quality/scenario-f/output.txt)       |   [View Notes](deepseek-r1-7b/code-quality/scenario-f/key-observation.md)               |
 
-----------
 
 ### 3.2 SQL Generation (Data)
 
@@ -225,7 +216,6 @@ Use UNNEST and handle missing keys gracefully.
 | Gemini Flash   |Poor|2976 ms|599|246|[View Output](gemini-1-5-flash/sql-generation/scenario-b/output.txt)|[View Notes](gemini-1-5-flash/sql-generation/scenario-b/output.txt)|
 | DeepSeek-R1 7B | Poor       |  31180 ms|      40        |      743          |   [View Output](deepseek-r1-7b/sql-generation/scenario-b/output.txt)    |    [View Notes](deepseek-r1-7b/sql-generation/scenario-b/key-observation.md)              |
 
-----------
 
 ### 3.3 Infrastructure Automation (DevOps)
 
