@@ -22,7 +22,7 @@
 | Ease of Use / Dev-Experience               |        |               |              |                |
 | Speed / Latency (avg TTFT & tok/s)         |        |               |              |                |
 
-**Legend** → `excellent` | `good` | `basic / limited` | `not supported`
+**Legend** → `Excellent` | `Good` | `Basic / Limited` | `Poor`
 
 ---
 
