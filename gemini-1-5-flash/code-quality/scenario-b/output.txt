@@ -1,0 +1,14 @@
+ ```python
+def find_pairs(nums, target):
+    seen = set()
+    pairs = []
+    for num in nums:
+        complement = target - num
+        if complement in seen:
+            pairs.append((num, complement))
+        seen.add(num)
+    return pairs
+
+```
+
+The original code has O(n^2) time complexity due to nested loops.  The refactored version uses a set for O(1) lookup, resulting in O(n) time and space complexity.

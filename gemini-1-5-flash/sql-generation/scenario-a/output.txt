@@ -1,0 +1,36 @@
+```sql
+WITH
+  regional_sales AS (
+    SELECT
+      c.region,
+      s.item_id,
+      SUM(s.qty * s.price) AS revenue,
+      RANK() OVER (
+        PARTITION BY
+          c.region
+        ORDER BY
+          SUM(s.qty * s.price) DESC
+      ) AS item_rank
+    FROM
+      sales s
+      JOIN customers c ON s.customer_id = c.customer_id
+    WHERE
+      s.sale_date >= '2025-01-01'
+      AND s.sale_date < '2025-04-01'
+    GROUP BY
+      c.region,
+      s.item_id
+  )
+SELECT
+  region,
+  item_id,
+  revenue,
+  item_rank
+FROM
+  regional_sales
+WHERE
+  item_rank <= 3
+ORDER BY
+  region,
+  item_rank;
+```

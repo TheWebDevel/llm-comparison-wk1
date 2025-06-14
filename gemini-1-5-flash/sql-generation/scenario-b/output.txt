@@ -1,0 +1,21 @@
+ ```sql
+CREATE OR REPLACE FUNCTION `your_project.your_dataset.json_to_rows`(json STRING) AS (
+  (
+    SELECT
+        SAFE_CAST(JSON_EXTRACT_SCALAR(json, '$.user_id') AS INT64) AS user_id,
+        SAFE_CAST(JSON_EXTRACT_SCALAR(json, '$.ts') AS TIMESTAMP) AS ts,
+        SAFE_CAST(JSON_EXTRACT_SCALAR(json, '$.payload.key1') AS STRING) AS payload_key1,
+        SAFE_CAST(JSON_EXTRACT_SCALAR(json, '$.payload.key2') AS INT64) AS payload_key2,
+        SAFE_CAST(JSON_EXTRACT_SCALAR(json, '$.payload.key3') AS BOOL) AS payload_key3,
+        -- Add more payload keys as needed
+    FROM
+      UNNEST([json])
+  )
+);
+
+SELECT
+    json_to_rows(events)
+FROM
+    `your_project.your_dataset.your_table`;
+
+```

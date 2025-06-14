@@ -1,0 +1,81 @@
+ ```javascript
+/**
+ * Express middleware to log HTTP method, path, and response time.
+ *
+ * @param {object} req - Express request object.
+ * @param {object} res - Express response object.
+ * @param {function} next - Express next middleware function.
+ */
+const responseTimeLogger = (req, res, next) => {
+  const start = Date.now();
+  const originalSend = res.send;
+
+  res.send = function (body) {
+    const end = Date.now();
+    const responseTime = end - start;
+    console.log(
+      `Method: ${req.method}, Path: ${req.path}, Response Time: ${responseTime}ms`
+    );
+    originalSend.call(this, body);
+  };
+
+  next();
+};
+
+
+// Jest tests
+const express = require('express');
+const request = require('supertest');
+
+describe('responseTimeLogger middleware', () => {
+
+  it('should log request method, path, and response time', async () => {
+    const app = express();
+    app.use(responseTimeLogger);
+    app.get('/test', (req, res) => {
+      res.send('Test');
+    });
+
+    const consoleSpy = jest.spyOn(console, 'log');
+    await request(app).get('/test');
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Method: GET'));
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Path: /test'));
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Response Time:'));
+    consoleSpy.mockRestore();
+  });
+
+  it('should handle different HTTP methods', async () => {
+    const app = express();
+    app.use(responseTimeLogger);
+    app.post('/test', (req, res) => {
+      res.send('Test');
+    });
+
+    const consoleSpy = jest.spyOn(console, 'log');
+    await request(app).post('/test');
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Method: POST'));
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Path: /test'));
+    consoleSpy.mockRestore();
+  });
+
+  it('should work with other middleware', async () => {
+    const app = express();
+    const otherMiddleware = (req, res, next) => {
+      req.test = 'test';
+      next();
+    };
+    app.use(responseTimeLogger);
+    app.use(otherMiddleware);
+    app.get('/test', (req, res) => {
+      res.send('Test');
+    });
+
+    const consoleSpy = jest.spyOn(console, 'log');
+    await request(app).get('/test');
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Method: GET'));
+    consoleSpy.mockRestore();
+  });
+
+});
+
+```

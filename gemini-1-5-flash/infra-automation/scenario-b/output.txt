@@ -1,0 +1,33 @@
+ ```bash
+#!/bin/bash
+
+set -e
+
+# Get short Git commit hash
+COMMIT_HASH=$(git rev-parse --short HEAD)
+
+# Build Docker image
+docker build -t my-repo:latest .
+docker tag my-repo:latest my-repo:${COMMIT_HASH}
+
+# Push to ECR
+docker push my-repo:latest
+docker push my-repo:${COMMIT_HASH}
+
+# Slack webhook URL (replace with your actual URL)
+SLACK_WEBHOOK_URL="YOUR_SLACK_WEBHOOK_URL"
+
+# Function to send Slack notification
+send_slack_notification() {
+  MESSAGE=":x: Docker image build/push failed for commit ${COMMIT_HASH}"
+  curl -X POST -H "Content-type: application/json" --data "{\"text\":\"${MESSAGE}\"}" "${SLACK_WEBHOOK_URL}" || true
+}
+
+# Check for errors and send Slack notification if needed
+if [[ $? -ne 0 ]]; then
+  send_slack_notification
+  exit 1
+fi
+
+exit 0
+```

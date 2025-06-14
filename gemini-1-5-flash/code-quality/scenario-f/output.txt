@@ -1,0 +1,10 @@
+ ```csharp
+var result = orders.Where(o => o.Total > 1000)
+                   .Select(o => o.CustomerId)
+                   .Distinct()
+                   .ToList();
+```
+
+**Performance Impact:**
+
+The original code creates two intermediate lists due to the `.ToList()` calls. This leads to unnecessary memory allocation and copying, especially with large datasets.  The refactored version leverages deferred execution.  The `Where`, `Select`, and `Distinct` operations are not executed until the final `.ToList()` is called. This significantly improves performance by avoiding the creation of intermediate lists and processing the data in a single pass. The Big O complexity remains the same (O(n)), but the constant factors are reduced, resulting in a noticeable performance gain for large datasets.
