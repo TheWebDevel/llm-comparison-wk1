@@ -69,7 +69,7 @@ Create a FastAPI app with full CRUD endpoints for `Book` {id:int, title:str, aut
 
 | Model           | Rating | Latency (s) | Input Tokens | Output Tokens | Model Output | Key Observations |
 |----------------|--------|-------------|--------------|----------------|-------------------------------|------------------|
-| GPT-4o         |Good|8200 ms|67|643|[View Output](gpt-4o/code-quality/scenario-a/output.txt)|[View Notes](gpt-4o/code-quality/scenario-a/output.txt)|
+| GPT-4o         |Good|8200 ms|67|643|[View Output](gpt-4o/code-quality/scenario-a/output.txt)|[View Notes](gpt-4o/code-quality/scenario-a/key-observation.md)|
 | Claude Sonnet  | Good   |     21363 ms        |   383           |    1268            |  [View Output](claude-3-7/code-quality/scenario-a/output.txt)  |     [View Notes](claude-3-7/code-quality/scenario-a/key-observation.md)             |
 | Gemini Flash   | Good       |   6840          |    633          |      967          |  [View Output](gemini-1-5-flash/code-quality/scenario-a/output.txt)   |[View Notes](gemini-1-5-flash/code-quality/scenario-a/key-observation.md) |
 | DeepSeek-R1 7B |  Basic/Limited      |     62389 ms        |        76      |       1574         |         [View Output](deepseek-r1-7b/code-quality/scenario-a/output.txt) |  [View Notes](deepseek-r1-7b/code-quality/scenario-a/key-observation.md)|
