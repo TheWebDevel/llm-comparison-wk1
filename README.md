@@ -26,7 +26,7 @@
 **Legend** → `Excellent` | `Good` | `Basic / Limited` | `Poor`
 
 ## 2. Rating Guidelines
-| Rating              | Definition (apply to every criterion)                                                           |
+| Rating              | Definition |
 |---------------------|--------------------------------------------------------------------------------------------------|
 | **Excellent**       | Correct on first run, minimal edits, handles edge-cases          |
 | **Good**            | Minor fixes needed, occasional errors                     |
