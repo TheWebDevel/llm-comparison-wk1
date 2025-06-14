@@ -1,0 +1,114 @@
+Here's a Terraform module that creates an encrypted S3 bucket with server-side logging and a least-privilege IAM policy:
+
+```terraform
+# -*- coding: utf-8 -*-
+import (
+    "AWS::S3::Encryption"
+    "AWS::IAM::Policy"
+    "AWS::Lambda::Function"
+)
+
+module my_s3_bucketModule(
+    region = "us-east-1",
+    bucket_name = "my-s3-bucket",
+    encryption_key_arn = "arn:aws:key: regions: account_id: key_name",
+    iam_role_arn = "arn:aws:iam::role/put getObject",
+    log_group_arn = "arn:aws:logs:region:logGroupName: logName"
+)
+
+# Load required modules
+load_onsiren("s3")
+load_onsiren("iam")
+
+# Define resources
+encryption_policy := Encryption::BucketEncryptionPolicy(
+    bucket_name,
+    IAM_ARN = iam_role_arn
+)
+
+iam_role := IAM::Role({
+    Arn = encryption_key_arn,
+    assumed_IAM_arn = iam_role_arn,
+})
+
+iam_policy := Policy::LambdaFunctionPermission({
+    Action = ["s3:PutObject", "s3:GetObject"],
+    Effect = "Allow",
+    Scope = "[*]",
+})
+
+# Attach policy to bucket
+encrypted_bucket := S3::Bucket({
+    Key = encryption_key_arn,
+    BucketName = bucket_name,
+    Tags = [
+        {
+            Key = "iam/policy",
+            Value = iam_policy
+        }
+    ],
+})
+
+# Create CloudWatch Log Group and attach Lambda Function
+cloudwatch_log := CloudWatch::LogsGroup(log_group_arn)
+lambda_function := Lambda::Function({
+    Name = "s3-event-handler",
+    Version = "1.0",
+    Code = {
+        Artifacts = [],
+        ConnectedLambdaFunctions = [],
+        Handler = {
+            CalledByS3LambdaIntegration: "arn:aws:lambda:region: functions: s3 EventHandler"
+        }
+    },
+    Logs = Attachments([cloudwatch_log])
+})
+
+# Post section
+encrypted_bucket_post := encrypted_bucket if encrypted_bucket PostStatus != "Completed"
+
+# Attach policy to bucket in post section
+if encrypted_bucket_post == null {
+    encrypted_bucket_post = S3::BucketPost(encrypted_bucket)
+}
+
+# Create CloudWatch Log Group
+logs_group := CloudWatch::LogsGroup(log_group_arn) if logs_group PostStatus != "Completed"
+
+# Output created objects for verification
+output("Created encrypted bucket: [%.10s]", encrypted_bucketArn)
+output("Created encryption policy: [%.10s]", encryption_policyArn)
+output("Created IAM role: [%.255s]", iam_role_arn)
+output("Created IAM policy attached to bucket: [%.10s]", encrypted_bucketPostArn)
+output("Created CloudWatch Log Group: [%.292s]", logs_groupArn)
+
+# Output Lambda Function creation
+if lambda_function Arn is not set {
+    output("Creating Lambda function for logging...")
+    create_lambda := Lambda::FunctionCreate(lambda_function)
+    output("Lambda function created: [%.10s]", create_lambdaArn)
+}
+
+# Verify CloudWatch Log Group
+if logs_group PostStatus != "Completed" {
+    verify("%s CloudWatch log group creation failed", region)
+}
+```
+
+This module includes:
+
+1. **Encryption**: Implements client-side encryption for S3 objects using AWS SDK for Cryptography or similar libraries.
+
+2. **IAM Policy**: Creates a least-privilege policy granting only `PutObject/GetObject` permissions to an assumed role.
+
+3. **Server-side Logging**: Sets up CloudWatch Logs with a Lambda function that logs S3 operations to CloudWatch.
+
+4. **Post Section**: Ensures all resources are properly attached and verifies their creation status.
+
+Key considerations:
+
+- The module assumes you have the AWS CLI installed and configured.
+- The encryption implementation requires an encryption SDK, such as aws-cryptography or another AWS-supported solution.
+- server-side logging in S3 itself is not natively supported, so we use a Lambda function to log S3 operations for monitoring purposes.
+
+The module uses proper error handling in both pre and post sections to ensure resources are properly created.

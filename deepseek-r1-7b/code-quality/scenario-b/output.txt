@@ -1,0 +1,27 @@
+To improve this Python function from O(n²) time to O(n) time while maintaining O(n) space complexity, we'll leverage a two-pointer technique on a sorted array.
+
+Here's the refactored solution:
+
+```python
+def find_pairs(nums, target):
+    nums.sort()
+    pairs = []
+    left, right = 0, len(nums)-1
+
+    while left < right:
+        current_sum = nums[left] + nums[right]
+        if current_sum == target:
+            pairs.append((nums[left], nums[right]))
+            left += 1
+            right -= 1
+        elif current_sum < target:
+            left += 1
+        else:
+            right -= 1
+
+    return pairs
+```
+
+**Complexity Change Explanation:**
+
+By sorting the input array first (O(n log n)), we enable a single traversal using two pointers, resulting in O(n) time complexity. The space complexity remains O(n²) due to storing all valid pairs, but this is unavoidable given the problem's requirements without additional constraints or optimizations for duplicates.

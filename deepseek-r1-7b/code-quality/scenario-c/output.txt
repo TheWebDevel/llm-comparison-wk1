@@ -1,0 +1,70 @@
+To solve this problem, we need to create an Express middleware that captures HTTP request metadata (method, path) and measures the response time in milliseconds. We will ensure that these metrics are logged accurately without relying on external logging libraries.
+
+### Approach
+1. **Accessing Request Metadata**: Use `req.method` to get the HTTP method and `req.path` to obtain the request path.
+2. **Measuring Response Time**: Utilize `reqStart` and `reqEnd` within an async middleware context to capture start and end times in milliseconds.
+3. **Handling Asynchronous Execution**: Since Express middlewares run asynchronously, ensure that we gather all relevant data before processing responses by waiting for each response using a while loop with await.
+4. **Error Handling**: If the request does not result in a response (e.g., server refused or rejected), log an appropriate error message instead of attempting to measure response time.
+
+### Solution Code
+
+```javascript
+const express = require('express');
+const { req, res } = express();
+
+// Create a mock response with timeout for testing purposes
+const mockResponse = {
+  status: 200,
+  headers: {},
+  body: 'Success message',
+  timeout: 1000 // 1 second timeout to prevent hanging times in logging
+};
+
+// Create an async middleware function
+async function LogHTTPRequestMetrics() {
+  const method = req.method;
+  const path = req.path;
+
+  let startTime;
+  let endTime;
+
+  // Gather all events attached to the collector
+  while (true) {
+    try {
+      await collect(jestCollector).events().next().catch(err => err || false);
+      if (!err) break; // Break when no more events are left to process
+    } catch (error) {
+      console.error('Error waiting for responses:', error);
+    }
+  }
+
+  const response = res.resolve(mockResponse);
+
+  try {
+    startTime = reqStart().ms();
+    endTime = reqEnd().ms();
+
+    if (response) {
+      const duration = endTime - startTime;
+      console.log(`HTTP ${method} /${path}\nResponse Time: ${duration} ms`);
+    } else {
+      console.error(`Request for path '${path}' with method '${method}' failed`);
+    }
+  } catch (error) {
+    console.error(`Error processing response:`, error);
+  }
+}
+
+// Register the middleware
+module.exports = LogHTTPRequestMetrics;
+```
+
+### Explanation
+1. **Import Necessary Modules**: Import `express` to create a server and access request/response objects.
+2. **Mock Response**: Define a mock response object with a timeout property set to ensure it does not cause hanging times during testing.
+3. **Asynchronous Middleware**: Implement an async middleware function that captures HTTP method, path, start time (`reqStart`), end time (`reqEnd`), and the response.
+4. **Event Loop**: Use a while loop to continuously await responses until all relevant events are processed from the Jest collector.
+5. **Response Time Calculation**: If a valid response is received, calculate the duration between start and end times in milliseconds and log it along with method and path.
+6. **Error Handling**: If no response is received (e.g., server refused), log an error message.
+
+This approach ensures that we accurately capture and log request metadata while handling asynchronous execution properly and providing robust error handling for edge cases.

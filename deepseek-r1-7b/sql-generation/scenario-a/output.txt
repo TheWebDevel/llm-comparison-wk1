@@ -1,0 +1,36 @@
+To provide an SQL solution that meets your requirements, we'll write a query that:
+
+1. Filters sales data for Q1 2025
+2. Groups by region and item
+3. Calculates revenue as qty * price
+4. Uses window functions to rank items within each region's context
+5. Limits results to top 3 per region
+
+Here is the SQL query:
+
+```sql
+SELECT
+    revenue,
+    RANK() OVER (PARTITION BY region ORDER BY revenue DESC) AS rank,
+    item_id
+FROM (
+    SELECT
+        s.revenue = s.qty * s.price as revenue,
+        c.region,
+        s.item_id
+    FROM sales s
+    JOIN customers c ON s.customer_id = c.customer_id
+    WHERE sale_date BETWEEN '2025-01-01' AND '2025-03-31'
+) AS subquery
+GROUP BY region, item_id
+ORDER BY rank ASC,
+        revenue DESC;
+```
+
+This query will:
+- Calculate the revenue for each item
+- Rank items within each region's context
+- Filter results to top 3 per region
+- Maintain deterministic ordering
+
+The final result will be sorted by rank (ascending) and then by revenue (descending), ensuring consistent output.

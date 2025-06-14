@@ -1,0 +1,35 @@
+Here's a clear SQL solution for your BigQuery requirement:
+
+```sql
+WITH events_unnested AS (
+    SELECT
+        COALESCE(extract(user_id FROM events), '') AS user_id,
+        EXTRACT(ts FROM events) AS ts,
+        UNNEST(extend_array(explode('payload.*'), 1)) AS payload_*
+    FROM `your_table`
+)
+SELECT
+    user_id,
+    ts,
+    payload_*
+FROM events_unnested
+LIMIT 100;
+```
+
+**Step-by-step Explanation:**
+
+1. **UNNEST the JSON Column**: The outermost UNNEST breaks down each JSON object in the 'events' column into individual key-value pairs.
+
+2. **Extract Specific Fields**: Using COALESCE and EXTRACT, we attempt to retrieve user_id and ts if they exist; otherwise, NULL is returned.
+
+3. **Flatten Payload Array**: The payload.* field (an array) is unnested using UNNEST with an explode clause to convert it into individual key-value pairs.
+
+4. **Result Structure**: The final table contains the three desired fields: user_id, ts, and all key-value pairs from payload. Each column will be NULL if the corresponding JSON property doesn't exist or was not specified.
+
+**Notes:**
+
+- **COALESCE**: Ensures that missing keys return NULL instead of throwing errors.
+- **UNNEST(extend_array())**: Converts the nested array into a flat list, making it easier to extract fields using EXTRACT.
+- **LIMIT 100**: Helps in testing by limiting output rows for practical purposes.
+
+This approach efficiently handles JSON parsing and ensures graceful handling of missing keys while maintaining readability and clarity.

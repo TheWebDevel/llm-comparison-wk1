@@ -1,10 +1,13 @@
 
 # AI Model Comparison
-**Models under test:** GPT-4o | Claude Sonnet 3.7 | Gemini Flash | DeepSeek-R1 7B (local via Ollama)  - Mac M3 with 18GB RAM
 **Reviewer:** Sathish Kumar Saravanan  
 **Date:** 14th June 2025
+**Models under test:**
+1. GPT-4o 
+2. Claude Sonnet 3.7 
+3. Gemini Flash 
+4. DeepSeek-R1 7B (local via Ollama)  - Mac M3 with 18GB RAM
 
----
 
 ## 1. Summary Scorecard
 | Criterion / Use-case                        | GPT-4o | Claude Sonnet | Gemini Flash | DeepSeek-R1 7B |
@@ -22,10 +25,10 @@
 ## 2. Rating Guidelines
 | Rating              | Definition (apply to every criterion)                                                           |
 |---------------------|--------------------------------------------------------------------------------------------------|
-| **excellent**       | Correct on first run, minimal edits, handles edge-cases, unit tests pass; TTFT < 0.5 s          |
-| **good**            | Minor fixes needed, occasional errors, passes after 1 retry; TTFT 0.5 – 1 s                     |
+| **excellent**       | Correct on first run, minimal edits, handles edge-cases, unit tests pass          |
+| **good**            | Minor fixes needed, occasional errors, passes after 1 retry                     |
 | **basic / limited** | Works only for simple cases, frequent edits, partial or incorrect output                        |
-| **not supported**   | Model refuses, hallucinates unusable code/SQL/script, or exceeds timeout                        |
+| **poor**   | Model refuses, hallucinates unusable code/SQL/script, or exceeds timeout                        |
 
 ---
 
@@ -74,7 +77,7 @@ Create a FastAPI app with full CRUD endpoints for `Book` {id:int, title:str, aut
 | GPT-4o         |        |             |              |                |                               |                  |
 | Claude Sonnet  | Good   |     21363 ms        |   383           |    1268            |  [View Output](claude-3-7/code-quality/scenario-a/output.txt)  |     [View Notes](claude-3-7/code-quality/scenario-a/key-observation.md)             |
 | Gemini Flash   |        |             |              |                |                               |                  |
-| DeepSeek-R1 7B |        |             |              |                |                               |                  |
+| DeepSeek-R1 7B |  Basic/Limited      |     62389 ms        |        76      |       1574         |         [View Output](deepseek-r1-7b/code-quality/scenario-a/output.txt) |  [View Notes](deepseek-r1-7b/code-quality/scenario-a/key-observation.md)|
 
 
 
@@ -99,7 +102,7 @@ def find_pairs(nums, target):
 | GPT-4o         |        |             |              |                |                               |                  |
 | Claude Sonnet  | Good   |     3558 ms        |   409           |    124            |  [View Output](claude-3-7/code-quality/scenario-b/output.txt)  |     [View Notes](claude-3-7/code-quality/scenario-b/key-observation.md)             |
 | Gemini Flash   |        |             |              |                |                               |                  |
-| DeepSeek-R1 7B |        |             |              |                |                               |                  |
+| DeepSeek-R1 7B |   Good     |     27472 ms        |       111       |        681        |    [View Output](deepseek-r1-7b/code-quality/scenario-b/output.txt) |    [View Notes](deepseek-r1-7b/code-quality/scenario-b/key-observation.md)  |
 
 
 #### Scenario C · JavaScript – Node/Express Middleware
@@ -115,7 +118,7 @@ Provide Jest tests mocking req/res objects.
 | GPT-4o         |        |             |              |                |                               |                  |
 | Claude Sonnet  | Excellent   |     18171 ms        |   340           |    717            |  [View Output](claude-3-7/code-quality/scenario-c/output.txt)  |     [View Notes](claude-3-7/code-quality/scenario-c/key-observation.md)             |
 | Gemini Flash   |        |             |              |                |                               |                  |
-| DeepSeek-R1 7B |        |             |              |                |                               |                  |
+| DeepSeek-R1 7B | Poor       |   69874          |    35          |       1671         |    [View Output](deepseek-r1-7b/code-quality/scenario-c/output.txt)   |     [View Notes](deepseek-r1-7b/code-quality/scenario-c/key-observation.md)             |
 
 #### Scenario D · JavaScript – React Hook Migration (TypeScript)
 
@@ -137,7 +140,7 @@ class Counter extends React.Component<{start:number}, {count:number}> {
 | GPT-4o         |        |             |              |                |                               |                  |
 | Claude Sonnet  | Excellent   |     5639 ms        |   424           |    314            |  [View Output](claude-3-7/code-quality/scenario-d/output.txt)  |     [View Notes](claude-3-7/code-quality/scenario-d/key-observation.md)             |
 | Gemini Flash   |        |             |              |                |                               |                  |
-| DeepSeek-R1 7B |        |             |              |                |                               |                  |
+| DeepSeek-R1 7B |  Poor      |       36095      |      116        |     825    | [View Output](deepseek-r1-7b/code-quality/scenario-d/output.txt) |     [View Notes](deepseek-r1-7b/code-quality/scenario-d/key-observation.md)  |
 
 #### Scenario E · C# – ASP.NET Core Minimal API
 
@@ -155,7 +158,7 @@ that returns a User from an in-memory list.
 | GPT-4o         |        |             |              |                |                               |                  |
 | Claude Sonnet  | Excellent   |     13984 ms        |   371           |    979            |  [View Output](claude-3-7/code-quality/scenario-e/output.txt)  |     [View Notes](claude-3-7/code-quality/scenario-e/key-observation.md)             |
 | Gemini Flash   |        |             |              |                |                               |                  |
-| DeepSeek-R1 7B |        |             |              |                |                               |                  |
+| DeepSeek-R1 7B |  Poor      |     47559        |     64         |        1101        |  [View Output](deepseek-r1-7b/code-quality/scenario-e/output.txt) |       [View Notes](deepseek-r1-7b/code-quality/scenario-e/key-observation.md)     |
 
 #### Scenario F · C# – LINQ Optimisation
 
@@ -176,7 +179,7 @@ var result = orders.Where(o => o.Total > 1000)
 | GPT-4o         |        |             |              |                |                               |                  |
 | Claude Sonnet  | Good   |     4940 ms        |   380           |    177            |  [View Output](claude-3-7/code-quality/scenario-f/output.txt)  |     [View Notes](claude-3-7/code-quality/scenario-f/key-observation.md)             |
 | Gemini Flash   |        |             |              |                |                               |                  |
-| DeepSeek-R1 7B |        |             |              |                |                               |                  |
+| DeepSeek-R1 7B |   Poor     |     31070        |      72        |     684           |   [View Output](deepseek-r1-7b/code-quality/scenario-f/output.txt)       |   [View Notes](deepseek-r1-7b/code-quality/scenario-f/key-observation.md)               |
 
 ----------
 
@@ -198,7 +201,7 @@ by revenue for Q1 2025. Include revenue and rank columns.
 | GPT-4o         |        |             |              |                |                               |                  |
 | Claude Sonnet  | Good   |     5339 ms        |   377           |    228            |  [View Output](claude-3-7/sql-generation/scenario-a/output.txt)  |     [View Notes](claude-3-7/sql-generation/scenario-a/key-observation.md)             |
 | Gemini Flash   |        |             |              |                |                               |                  |
-| DeepSeek-R1 7B |        |             |              |                |                               |                  |
+| DeepSeek-R1 7B |  Poor      |      35651       |     72       |     847           |  [View Output](deepseek-r1-7b/sql-generation/scenario-a/output.txt)  |     [View Notes](deepseek-r1-7b/sql-generation/scenario-a/key-observation.md)   |
 
 #### Scenario B · Dialect Edge-Case (BigQuery)
 
@@ -214,7 +217,7 @@ Use UNNEST and handle missing keys gracefully.
 | GPT-4o         |        |             |              |                |                               |                  |
 | Claude Sonnet  | Basic/Limited   |     6221 ms        |   347           |    237            |  [View Output](claude-3-7/sql-generation/scenario-b/output.txt)  |     [View Notes](claude-3-7/sql-generation/scenario-b/key-observation.md)             |
 | Gemini Flash   |        |             |              |                |                               |                  |
-| DeepSeek-R1 7B |        |             |              |                |                               |                  |
+| DeepSeek-R1 7B | Poor       |  31180           |      40        |      743          |   [View Output](deepseek-r1-7b/sql-generation/scenario-b/output.txt)    |    [View Notes](deepseek-r1-7b/sql-generation/scenario-b/key-observation.md)              |
 
 ----------
 
@@ -233,7 +236,7 @@ PutObject/GetObject to a supplied role ARN.
 | GPT-4o         |        |             |              |                |                               |                  |
 | Claude Sonnet  | Basic/Limited   |     21610 ms       |   348           |    1340            |  [View Output](claude-3-7/infra-automation/scenario-a/output.txt)  |     [View Notes](claude-3-7/infra-automation/scenario-a/key-observation.md)             |
 | Gemini Flash   |        |             |              |                |                               |                  |
-| DeepSeek-R1 7B |        |             |              |                |                               |                  |
+| DeepSeek-R1 7B | Poor       |    57578         |    40          |   1401             |[View Output](deepseek-r1-7b/infra-automation/scenario-a/output.txt)| [View Notes](deepseek-r1-7b/infra-automation/scenario-a/key-observation.md)|
 
 
 #### Scenario B · Bash CI Script
@@ -251,7 +254,7 @@ Script must be POSIX-compliant.
 | GPT-4o         |        |             |              |                |                               |                  |
 | Claude Sonnet  | Good   |     11437 ms       |   366           |    705            |  [View Output](claude-3-7/infra-automation/scenario-b/output.txt)  |     [View Notes](claude-3-7/infra-automation/scenario-b/key-observation.md)             |
 | Gemini Flash   |        |             |              |                |                               |                  |
-| DeepSeek-R1 7B |        |             |              |                |                               |                  |
+| DeepSeek-R1 7B | Poor       |   59311          |   55           |     1419           | [View Output](deepseek-r1-7b/infra-automation/scenario-b/output.txt)| [View Notes](deepseek-r1-7b/infra-automation/scenario-b/output.txt)  |
 
 
 ## 4. Conclusions & Recommendations
